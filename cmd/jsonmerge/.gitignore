@@ -1,0 +1,5 @@
+/jsonmerge
+/jsonmerge.exe
+
+/vendor/**
+!/vendor/vendor.json

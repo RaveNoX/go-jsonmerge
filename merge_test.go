@@ -102,3 +102,24 @@ func TestMergeBytes(t *testing.T) {
 		t.Errorf("info.Errors count is not 0, count: %v", len(info.Errors))
 	}
 }
+
+func TestLongNumbers(t *testing.T) {
+	input := `{"Id":12423434,"Value":12423434}`
+	patch := `{"Value":12423439}`
+	outputJSON := `{"Id":12423434,"Value":12423439}`
+
+	result, info, err := MergeBytes([]byte(input), []byte(patch))
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if string(result) != outputJSON {
+		t.Errorf("Result not equals output\nExpected:\n%s\n\nGot:\n%s\n\n", outputJSON, result)
+	}
+
+	if len(info.Errors) != 0 {
+		t.Errorf("info.Errors count is not 0, count: %v", len(info.Errors))
+	}
+}

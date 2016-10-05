@@ -1,6 +1,7 @@
 package jsonmerge
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -97,13 +98,13 @@ func Merge(data, patch interface{}) (interface{}, *Info) {
 func MergeBytesIndent(dataBuff, patchBuff []byte, prefix, indent string) (mergedBuff []byte, info *Info, err error) {
 	var data, patch, merged interface{}
 
-	err = json.Unmarshal(dataBuff, &data)
+	err = unmarshalJSON(dataBuff, &data)
 	if err != nil {
 		err = fmt.Errorf("Cannot unmarshal data JSON: %v", err)
 		return
 	}
 
-	err = json.Unmarshal(patchBuff, &patch)
+	err = unmarshalJSON(patchBuff, &patch)
 	if err != nil {
 		err = fmt.Errorf("Cannot unmarshal patch JSON: %v", err)
 		return
@@ -126,13 +127,13 @@ func MergeBytesIndent(dataBuff, patchBuff []byte, prefix, indent string) (merged
 func MergeBytes(dataBuff, patchBuff []byte) (mergedBuff []byte, info *Info, err error) {
 	var data, patch, merged interface{}
 
-	err = json.Unmarshal(dataBuff, &data)
+	err = unmarshalJSON(dataBuff, &data)
 	if err != nil {
 		err = fmt.Errorf("Cannot unmarshal data JSON: %v", err)
 		return
 	}
 
-	err = json.Unmarshal(patchBuff, &patch)
+	err = unmarshalJSON(patchBuff, &patch)
 	if err != nil {
 		err = fmt.Errorf("Cannot unmarshal patch JSON: %v", err)
 		return
@@ -146,4 +147,11 @@ func MergeBytes(dataBuff, patchBuff []byte) (mergedBuff []byte, info *Info, err 
 	}
 
 	return
+}
+
+func unmarshalJSON(buff []byte, data interface{}) error {
+	decoder := json.NewDecoder(bytes.NewReader(buff))
+	decoder.UseNumber()
+
+	return decoder.Decode(data)
 }

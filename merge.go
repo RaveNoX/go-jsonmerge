@@ -35,7 +35,7 @@ func (info *Info) mergeValue(path []string, patch map[string]interface{}, key st
 
 	if _, ok := value.(map[string]interface{}); ok {
 		if !patchValueIsObject {
-			err := fmt.Errorf("Type mismatch for \"%v\", value type: %T, patch type: %T", pathStr, value, patchValue)
+			err := fmt.Errorf("patch value must be object for key \"%v\"", pathStr)
 			info.Errors = append(info.Errors, err)
 			return value
 		}
@@ -100,13 +100,13 @@ func MergeBytesIndent(dataBuff, patchBuff []byte, prefix, indent string) (merged
 
 	err = unmarshalJSON(dataBuff, &data)
 	if err != nil {
-		err = fmt.Errorf("Cannot unmarshal data JSON: %v", err)
+		err = fmt.Errorf("error in data JSON: %v", err)
 		return
 	}
 
 	err = unmarshalJSON(patchBuff, &patch)
 	if err != nil {
-		err = fmt.Errorf("Cannot unmarshal patch JSON: %v", err)
+		err = fmt.Errorf("error in patch JSON: %v", err)
 		return
 	}
 
@@ -114,7 +114,7 @@ func MergeBytesIndent(dataBuff, patchBuff []byte, prefix, indent string) (merged
 
 	mergedBuff, err = json.MarshalIndent(merged, prefix, indent)
 	if err != nil {
-		err = fmt.Errorf("Cannot marshal merged JSON: %v", err)
+		err = fmt.Errorf("error writing merged JSON: %v", err)
 	}
 
 	return
@@ -129,13 +129,13 @@ func MergeBytes(dataBuff, patchBuff []byte) (mergedBuff []byte, info *Info, err 
 
 	err = unmarshalJSON(dataBuff, &data)
 	if err != nil {
-		err = fmt.Errorf("Cannot unmarshal data JSON: %v", err)
+		err = fmt.Errorf("error in data JSON: %v", err)
 		return
 	}
 
 	err = unmarshalJSON(patchBuff, &patch)
 	if err != nil {
-		err = fmt.Errorf("Cannot unmarshal patch JSON: %v", err)
+		err = fmt.Errorf("error in patch JSON: %v", err)
 		return
 	}
 
@@ -143,7 +143,7 @@ func MergeBytes(dataBuff, patchBuff []byte) (mergedBuff []byte, info *Info, err 
 
 	mergedBuff, err = json.Marshal(merged)
 	if err != nil {
-		err = fmt.Errorf("Cannot marshal merged JSON: %v", err)
+		err = fmt.Errorf("error writing merged JSON: %v", err)
 	}
 
 	return

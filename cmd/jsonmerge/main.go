@@ -7,29 +7,34 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/RaveNoX/go-jsoncommentstrip"
 	"github.com/RaveNoX/go-jsonmerge"
+	"github.com/RaveNoX/go-jsonmerge/cmd/jsonmerge/options"
+
+	"github.com/RaveNoX/go-jsoncommentstrip"
+
 	"github.com/bmatcuk/doublestar"
 	"github.com/spkg/bom"
 )
 
-func main() {
-	if len(os.Args) < 3 {
-		fmt.Fprintf(os.Stderr, "Usage: %v <patch.json> <glob1.json> <glob2.json>...<globN.json>\n", filepath.Base(os.Args[0]))
-		os.Exit(1)
+var settings *options.Options
+
+func init() {
+	settings = &options.Options{
+		Name: filepath.Base(os.Args[0]),
 	}
+}
 
-	patchFile := os.Args[1]
-	globs := os.Args[2:]
+func main() {
+	settings.ParseOrExit(os.Args[1:])
 
-	patchBuff, err := readJSON(patchFile)
+	patchBuff, err := readJSON(settings.Patch)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot read patch file: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Patch load error: %v\n", err)
 		os.Exit(2)
 	}
 
-	dataFiles, err := getGlobFiles(globs)
+	dataFiles, err := getGlobFiles(settings.Globs)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot get data files: %v\n", err)
 		os.Exit(3)
@@ -39,47 +44,47 @@ func main() {
 }
 
 func patchFiles(patchBuff []byte, dataFiles []string, replaces bool) {
-	dataFilesCount := len(dataFiles)
-
-	fmt.Printf("Data files to patch: %v\n\n", dataFilesCount)
-
 	for _, file := range dataFiles {
-		fmt.Printf("%v:\n", file)
+
+		if !settings.Quiet {
+			fmt.Println(file)
+		}
 
 		buff, err := readJSON(file)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Cannot load data file \"%v\": %v\n", file, err)
+			fmt.Fprintf(os.Stderr, "%v: load error: %v\n", file, err)
 			continue
 		}
 
 		result, info, err := jsonmerge.MergeBytesIndent(buff, patchBuff, "", "  ")
 
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Cannot merge data file \"%v\": %v\n", file, err)
+			fmt.Fprintf(os.Stderr, "%v: merge error: %v\n", file, err)
 			continue
 		}
 
 		if len(info.Errors) > 0 {
-			fmt.Fprintf(os.Stderr, "Replacement errors for data file \"%v\":\n", file)
 			for _, err := range info.Errors {
-				fmt.Fprintf(os.Stderr, "  %v\n", err)
+				fmt.Fprintf(os.Stderr, "%v: replace warning: %v\n", file, err)
 			}
 			fmt.Fprintln(os.Stderr)
 		}
 
-		fmt.Printf("  Replaced %v items\n", len(info.Replaced))
-		if replaces {
-			for k, v := range info.Replaced {
-				vBuff, _ := json.Marshal(v)
+		if settings.Verbose {
+			fmt.Printf("%v:\n", file)
+			if replaces {
+				for k, v := range info.Replaced {
+					vBuff, _ := json.Marshal(v)
 
-				fmt.Printf("    %v => %s\n", k, vBuff)
+					fmt.Printf("  %v = %s\n", k, vBuff)
+				}
+				fmt.Println()
 			}
-			fmt.Println()
 		}
 
 		err = ioutil.WriteFile(file, result, os.ModePerm)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Cannot write data file \"%v\": %v\n", file, err)
+			fmt.Fprintf(os.Stderr, "%v: save error: %v\n", file, err)
 		}
 	}
 }

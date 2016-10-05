@@ -15,6 +15,12 @@
 			"revisionTime": "2016-09-23T20:37:36Z"
 		},
 		{
+			"checksumSHA1": "Do4vjFy2nZTJT1hSysGpX3flWzI=",
+			"path": "github.com/juju/gnuflag",
+			"revision": "4e76c56581859c14d9d87e1ddbe29e1c0f10195f",
+			"revisionTime": "2016-08-09T16:52:03Z"
+		},
+		{
 			"checksumSHA1": "MDPIhPYDJabi2Sn2ZyBzVuTNRGQ=",
 			"path": "github.com/spkg/bom",
 			"revision": "59b7046e48ad6bac800c5e1dd5142282cbfcf154",

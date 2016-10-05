@@ -45,11 +45,6 @@ func main() {
 
 func patchFiles(patchBuff []byte, dataFiles []string, replaces bool) {
 	for _, file := range dataFiles {
-
-		if !settings.Quiet {
-			fmt.Println(file)
-		}
-
 		buff, err := readJSON(file)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v: load error: %v\n", file, err)
@@ -70,21 +65,25 @@ func patchFiles(patchBuff []byte, dataFiles []string, replaces bool) {
 			fmt.Fprintln(os.Stderr)
 		}
 
-		if settings.Verbose {
-			fmt.Printf("%v:\n", file)
-			if replaces {
-				for k, v := range info.Replaced {
-					vBuff, _ := json.Marshal(v)
-
-					fmt.Printf("  %v = %s\n", k, vBuff)
-				}
-				fmt.Println()
-			}
-		}
-
 		err = ioutil.WriteFile(file, result, os.ModePerm)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v: save error: %v\n", file, err)
+		}
+
+		if !settings.Quiet {
+			if settings.Verbose {
+				fmt.Printf("%v:\n", file)
+				if replaces {
+					for k, v := range info.Replaced {
+						vBuff, _ := json.Marshal(v)
+
+						fmt.Printf("  %v = %s\n", k, vBuff)
+					}
+					fmt.Println()
+				}
+			} else {
+				fmt.Printf("%v\n", file)
+			}
 		}
 	}
 }

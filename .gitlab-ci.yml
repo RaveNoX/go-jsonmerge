@@ -1,0 +1,60 @@
+stages:
+- build
+- test
+
+before_script:
+- ln -s $GOPATH/src/github.com/RaveNoX/go-jsonmerge ./
+
+after_script:
+- rm $GOPATH/src/github.com/RaveNoX/go-jsonmerge
+
+format:
+    image: golang:latest
+    stage: build
+    script:
+    - go get -u golang.org/x/tools/cmd/goimports
+    # If formatted is different than committed, exit with error    
+    - (if [ "$(goimports -l ./)" == "" ]; then echo "Good format"; else echo "Bad format"; exit 33; fi);
+
+metalinter:
+    image: golang:latest
+    stage: build
+    script:
+    - go get -u github.com/alecthomas/gometalinter
+    - gometalinter ./...
+
+compile-linux:    
+    image: golant:latest
+    stage: build
+    variables:
+        GOOS: linux
+        GOARCH: amd64
+    script:    
+    - mkdir -p artifacts
+    - go get -u github.com/kardianos/govendor
+    - (cd cmd/jsonmerge && govendor sync)
+    - go build cmd/jsonmerge -o artifacts/jsoncommentstrip
+    artifacts:
+        paths:
+        - artifacts/*
+
+compile-windows:
+    image: golant:latest
+    stage: build
+    variables:
+        GOOS: windows
+        GOARCH: amd64
+    script:
+    - mkdir -p artifacts
+    - go get -u github.com/kardianos/govendor
+    - (cd cmd/jsonmerge && govendor sync)
+    - go build cmd/jsoncommentstrip -o artifacts/jsoncommentstrip.exe
+    artifacts:
+        paths:
+        - artifacts/*
+
+test:
+    image: golang:latest
+    stage: test
+    script:
+    - go test -cover -v ./...

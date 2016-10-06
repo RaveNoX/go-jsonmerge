@@ -4,8 +4,10 @@ stages:
 
 before_script:
 - mkdir -p $GOPATH/src/github.com/RaveNoX/
-- ln -s ./ $GOPATH/src/github.com/RaveNoX/go-jsonmerge
+- ln -s $(pwd) $GOPATH/src/github.com/RaveNoX/go-jsonmerge
 - cd $GOPATH/src/github.com/RaveNoX/go-jsonmerge
+- go get -u github.com/kardianos/govendor
+- (cd cmd/jsonmerge && govendor sync)
 
 after_script:
 - rm $GOPATH/src/github.com/RaveNoX/go-jsonmerge
@@ -39,6 +41,7 @@ test:
     image: golang:latest
     stage: test
     script:
+    - pwd
     - go test -cover -v ./...
 
 compile-linux:
@@ -52,8 +55,6 @@ compile-linux:
         GOARCH: amd64
     script:    
     - mkdir -p artifacts
-    - go get -u github.com/kardianos/govendor
-    - (cd cmd/jsonmerge && govendor sync)
     - go build cmd/jsonmerge -o artifacts/jsoncommentstrip
     artifacts:
         paths:

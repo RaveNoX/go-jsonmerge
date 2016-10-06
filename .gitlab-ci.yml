@@ -3,7 +3,8 @@ stages:
 - test
 
 before_script:
-- ln -s $GOPATH/src/github.com/RaveNoX/go-jsonmerge ./
+- ln -s ./ $GOPATH/src/github.com/RaveNoX/go-jsonmerge
+- cd $GOPATH/src/github.com/RaveNoX/go-jsonmerge
 
 after_script:
 - rm $GOPATH/src/github.com/RaveNoX/go-jsonmerge

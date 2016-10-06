@@ -32,7 +32,7 @@ metalinter:
     script:
     - go get -u github.com/alecthomas/gometalinter
     - gometalinter -i -u
-    - gometalinter ./...
+    - gometalinter ./
 
 test:
     tags:

@@ -24,7 +24,7 @@ metalinter:
     - gometalinter ./...
 
 compile-linux:    
-    image: golant:latest
+    image: golang:latest
     stage: build
     variables:
         GOOS: linux
@@ -39,7 +39,7 @@ compile-linux:
         - artifacts/*
 
 compile-windows:
-    image: golant:latest
+    image: golang:latest
     stage: build
     variables:
         GOOS: windows

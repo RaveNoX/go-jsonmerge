@@ -55,7 +55,7 @@ compile-linux:
         GOARCH: amd64
     script:    
     - mkdir -p artifacts
-    - go build cmd/jsonmerge -o artifacts/jsoncommentstrip
+    - go build -o artifacts/jsonmerge cmd/jsonmerge 
     artifacts:
         paths:
         - artifacts/*
@@ -70,10 +70,8 @@ compile-windows:
         GOOS: windows
         GOARCH: amd64
     script:
-    - mkdir -p artifacts
-    - go get -u github.com/kardianos/govendor
-    - (cd cmd/jsonmerge && govendor sync)
-    - go build cmd/jsoncommentstrip -o artifacts/jsoncommentstrip.exe
+    - mkdir -p artifacts    
+    - go build -o artifacts/jsonmerge.exe cmd/jsonmerge
     artifacts:
         paths:
         - artifacts/*

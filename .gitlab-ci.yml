@@ -23,17 +23,6 @@ format:
     # If formatted is different than committed, exit with error    
     - (if [ "$(goimports -l ./)" == "" ]; then echo "Good format"; else echo "Bad format"; exit 33; fi);
 
-metalinter:
-    tags:
-    - docker
-    - linux
-    image: golang:latest
-    stage: test
-    script:
-    - go get -u github.com/alecthomas/gometalinter
-    - gometalinter -i -u
-    - gometalinter --deadline=30s ./ ./cmd/jsonmerge ./ ./cmd/jsonmerge/options
-
 test:
     tags:
     - docker
@@ -55,7 +44,7 @@ compile-linux:
         GOARCH: amd64
     script:    
     - mkdir -p artifacts
-    - go build -o artifacts/jsonmerge cmd/jsonmerge 
+    - go build -o artifacts/jsonmerge ./cmd/jsonmerge 
     artifacts:
         paths:
         - artifacts/*
@@ -71,7 +60,7 @@ compile-windows:
         GOARCH: amd64
     script:
     - mkdir -p artifacts    
-    - go build -o artifacts/jsonmerge.exe cmd/jsonmerge
+    - go build -o artifacts/jsonmerge.exe ./cmd/jsonmerge
     artifacts:
         paths:
         - artifacts/*

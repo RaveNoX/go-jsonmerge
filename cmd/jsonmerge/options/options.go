@@ -7,6 +7,7 @@ import (
 	"github.com/juju/gnuflag"
 )
 
+// Options for application
 type Options struct {
 	Verbose, Quiet bool
 	Patch          string
@@ -25,6 +26,7 @@ func (options *Options) getFlags() *gnuflag.FlagSet {
 	return flags
 }
 
+// Parse parses options, emits error if any
 func (options *Options) Parse(arguments []string) (err error) {
 	flags := options.getFlags()
 
@@ -52,7 +54,7 @@ func (options *Options) Parse(arguments []string) (err error) {
 	return
 }
 
-func (options *Options) PrintUsage() {
+func (options *Options) printUsage() {
 	flags := options.getFlags()
 
 	format := "%s\n    %s\n"
@@ -62,12 +64,13 @@ func (options *Options) PrintUsage() {
 	flags.PrintDefaults()
 }
 
+// ParseOrExit parses options, if any error calls os.Exit(2)
 func (options *Options) ParseOrExit(arguments []string) {
 	err := options.Parse(arguments)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n\n", err)
-		options.PrintUsage()
+		options.printUsage()
 		os.Exit(2)
 	}
 }

@@ -16,25 +16,25 @@ import (
 	"github.com/spkg/bom"
 )
 
-var settings *options.Options
+var opts *options.Options
 
 func init() {
-	settings = &options.Options{
+	opts = &options.Options{
 		Name: filepath.Base(os.Args[0]),
 	}
 }
 
 func main() {
-	settings.ParseOrExit(os.Args[1:])
+	opts.ParseOrExit(os.Args[1:])
 
-	patchBuff, err := readJSON(settings.Patch)
+	patchBuff, err := readJSON(opts.Patch)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Patch load error: %v\n", err)
 		os.Exit(2)
 	}
 
-	dataFiles, err := getGlobFiles(settings.Globs)
+	dataFiles, err := getGlobFiles(opts.Globs)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot get data files: %v\n", err)
 		os.Exit(3)
@@ -43,48 +43,63 @@ func main() {
 	patchFiles(patchBuff, dataFiles, true)
 }
 
+func printMergeErrors(file string, info *jsonmerge.Info) {
+	for _, err := range info.Errors {
+		fmt.Fprintf(os.Stderr, "%v: replace warning: %v\n", file, err)
+	}
+	fmt.Fprintln(os.Stderr)
+}
+
+func printReplaces(file string, info *jsonmerge.Info) {
+	for k, v := range info.Replaced {
+		vBuff, err := json.Marshal(v)
+		if err != nil {
+			vBuff = []byte(fmt.Sprintf("<cannot get value as JSON: %v>", err))
+		}
+
+		fmt.Printf("  %v = %s\n", k, vBuff)
+	}
+	fmt.Println()
+}
+
+func patchFile(patchBuff []byte, file string, replaces bool) {
+	buff, err := readJSON(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v: load error: %v\n", file, err)
+		return
+	}
+
+	result, info, err := jsonmerge.MergeBytesIndent(buff, patchBuff, "", "  ")
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v: merge error: %v\n", file, err)
+		return
+	}
+
+	if len(info.Errors) > 0 {
+		printMergeErrors(file, info)
+	}
+
+	err = ioutil.WriteFile(file, result, os.ModePerm)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v: save error: %v\n", file, err)
+	}
+
+	if !opts.Quiet {
+		if opts.Verbose {
+			fmt.Printf("%v:\n", file)
+			if replaces {
+				printReplaces(file, info)
+			}
+		} else {
+			fmt.Printf("%v\n", file)
+		}
+	}
+}
+
 func patchFiles(patchBuff []byte, dataFiles []string, replaces bool) {
 	for _, file := range dataFiles {
-		buff, err := readJSON(file)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v: load error: %v\n", file, err)
-			continue
-		}
-
-		result, info, err := jsonmerge.MergeBytesIndent(buff, patchBuff, "", "  ")
-
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v: merge error: %v\n", file, err)
-			continue
-		}
-
-		if len(info.Errors) > 0 {
-			for _, err := range info.Errors {
-				fmt.Fprintf(os.Stderr, "%v: replace warning: %v\n", file, err)
-			}
-			fmt.Fprintln(os.Stderr)
-		}
-
-		err = ioutil.WriteFile(file, result, os.ModePerm)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v: save error: %v\n", file, err)
-		}
-
-		if !settings.Quiet {
-			if settings.Verbose {
-				fmt.Printf("%v:\n", file)
-				if replaces {
-					for k, v := range info.Replaced {
-						vBuff, _ := json.Marshal(v)
-
-						fmt.Printf("  %v = %s\n", k, vBuff)
-					}
-					fmt.Println()
-				}
-			} else {
-				fmt.Printf("%v\n", file)
-			}
-		}
+		patchFile(patchBuff, file, replaces)
 	}
 }
 

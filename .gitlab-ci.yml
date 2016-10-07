@@ -32,7 +32,7 @@ metalinter:
     script:
     - go get -u github.com/alecthomas/gometalinter
     - gometalinter -i -u
-    - gometalinter ./
+    - gometalinter --deadline=30s ./ ./cmd/jsonmerge ./ ./cmd/jsonmerge/options
 
 test:
     tags:

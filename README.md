@@ -61,8 +61,10 @@ GO library for merging JSON objects
 ## Commandline Tool
 
 ```bash
-$ go get github.com/RaveNoX/go-jsonmerge/cmd/jsonmerge
+$ go get -u github.com/RaveNoX/go-jsonmerge/cmd/jsonmerge
 $ jsonmerge <patch.json> <glob1.json> <glob2.json>...<globN.json>
+# For help
+$ jsonmerge -h
 ```
 
 ## License

@@ -4,22 +4,26 @@ import (
 	"fmt"
 	"os"
 
+	"flag"
+
 	"github.com/juju/gnuflag"
 )
 
 // Options for application
 type Options struct {
-	Verbose, Quiet bool
-	Patch          string
-	Globs          []string
-	Name           string
+	Verbose, Quiet, DryRun bool
+	Patch                  string
+	Globs                  []string
+	Name                   string
 }
 
 func (options *Options) getFlags() *gnuflag.FlagSet {
 	flags := gnuflag.NewFlagSet(options.Name, gnuflag.ContinueOnError)
 
+	flags.BoolVar(&options.DryRun, "dry", false, "Dry run: do not really make changes")
 	flags.BoolVar(&options.Quiet, "quiet", false, "Do not display changed files")
 	flags.BoolVar(&options.Verbose, "verbose", false, "Display changed values")
+	flag.BoolVar(&options.DryRun, "d", false, "Dry run: do not really make changes")
 	flags.BoolVar(&options.Quiet, "q", false, "Do not display changed files")
 	flags.BoolVar(&options.Verbose, "v", false, "Display changed values")
 

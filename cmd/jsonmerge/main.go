@@ -80,9 +80,11 @@ func patchFile(patchBuff []byte, file string, replaces bool) {
 		printMergeErrors(file, info)
 	}
 
-	err = ioutil.WriteFile(file, result, os.ModePerm)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v: save error: %v\n", file, err)
+	if !opts.DryRun {
+		err = ioutil.WriteFile(file, result, os.ModePerm)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v: save error: %v\n", file, err)
+		}
 	}
 
 	if !opts.Quiet {

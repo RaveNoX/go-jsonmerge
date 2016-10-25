@@ -123,6 +123,7 @@ func getGlobFiles(globs []string) (files []string, err error) {
 	var matches []string
 
 	for _, glob := range globs {
+		glob = filepath.FromSlash(glob)
 		matches, err = doublestar.Glob(glob)
 
 		if err != nil {

@@ -12,6 +12,8 @@ import (
 
 	"github.com/RaveNoX/go-jsoncommentstrip"
 
+	"sort"
+
 	"github.com/bmatcuk/doublestar"
 	"github.com/spkg/bom"
 )
@@ -40,7 +42,11 @@ func main() {
 		os.Exit(3)
 	}
 
-	patchFiles(patchBuff, dataFiles, true)
+	if opts.DryRun {
+		fmt.Fprintln(os.Stderr, "Dry run: no files will be really patched")
+		fmt.Fprintln(os.Stderr)
+	}
+	patchFiles(patchBuff, dataFiles)
 }
 
 func printMergeErrors(file string, info *jsonmerge.Info) {
@@ -51,7 +57,16 @@ func printMergeErrors(file string, info *jsonmerge.Info) {
 }
 
 func printReplaces(file string, info *jsonmerge.Info) {
-	for k, v := range info.Replaced {
+	var keys []string
+
+	for k := range info.Replaced {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := info.Replaced[k]
 		vBuff, err := json.Marshal(v)
 		if err != nil {
 			vBuff = []byte(fmt.Sprintf("<cannot get value as JSON: %v>", err))
@@ -62,7 +77,7 @@ func printReplaces(file string, info *jsonmerge.Info) {
 	fmt.Println()
 }
 
-func patchFile(patchBuff []byte, file string, replaces bool) {
+func patchFile(patchBuff []byte, file string) {
 	buff, err := readJSON(file)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v: load error: %v\n", file, err)
@@ -90,18 +105,16 @@ func patchFile(patchBuff []byte, file string, replaces bool) {
 	if !opts.Quiet {
 		if opts.Verbose {
 			fmt.Printf("%v:\n", file)
-			if replaces {
-				printReplaces(file, info)
-			}
+			printReplaces(file, info)
 		} else {
 			fmt.Printf("%v\n", file)
 		}
 	}
 }
 
-func patchFiles(patchBuff []byte, dataFiles []string, replaces bool) {
+func patchFiles(patchBuff []byte, dataFiles []string) {
 	for _, file := range dataFiles {
-		patchFile(patchBuff, file, replaces)
+		patchFile(patchBuff, file)
 	}
 }
 

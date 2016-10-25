@@ -14,6 +14,8 @@ import (
 
 	"sort"
 
+	"strings"
+
 	"github.com/bmatcuk/doublestar"
 	"github.com/spkg/bom"
 )
@@ -65,6 +67,7 @@ func printReplaces(file string, info *jsonmerge.Info) {
 
 	sort.Strings(keys)
 
+	fmt.Printf("%v:\n", file)
 	for _, k := range keys {
 		v := info.Replaced[k]
 		vBuff, err := json.Marshal(v)
@@ -74,6 +77,39 @@ func printReplaces(file string, info *jsonmerge.Info) {
 
 		fmt.Printf("  %v = %s\n", k, vBuff)
 	}
+	fmt.Println()
+}
+
+func printPatch(file string, info *jsonmerge.Info) {
+	m := make(map[string]interface{})
+
+	for k, v := range info.Replaced {
+		parts := strings.Split(k, ".")
+		lastIndex := len(parts) - 1
+		ko := m
+		for _, p := range parts[:lastIndex] {
+			if o, ok := ko[p].(map[string]interface{}); ok {
+				ko = o
+			} else {
+				o = make(map[string]interface{})
+				ko[p] = o
+				ko = o
+			}
+		}
+
+		ko[parts[lastIndex]] = v
+	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+
+	fmt.Printf("%v:\n", file)
+	err := enc.Encode(m)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot write %s patch: %v\n", file, err)
+	}
+
 	fmt.Println()
 }
 
@@ -104,8 +140,9 @@ func patchFile(patchBuff []byte, file string) {
 
 	if !opts.Quiet {
 		if opts.Verbose {
-			fmt.Printf("%v:\n", file)
 			printReplaces(file, info)
+		} else if opts.PrintPatch {
+			printPatch(file, info)
 		} else {
 			fmt.Printf("%v\n", file)
 		}

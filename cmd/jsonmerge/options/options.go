@@ -9,18 +9,20 @@ import (
 
 // Options for application
 type Options struct {
-	Verbose, Quiet, DryRun bool
-	Patch                  string
-	Globs                  []string
-	Name                   string
+	Verbose, Quiet, DryRun, PrintPatch bool
+	Patch                              string
+	Globs                              []string
+	Name                               string
 }
 
 func (options *Options) getFlags() *gnuflag.FlagSet {
 	flags := gnuflag.NewFlagSet(options.Name, gnuflag.ContinueOnError)
 
+	flags.BoolVar(&options.PrintPatch, "patch", false, "Print patch")
 	flags.BoolVar(&options.DryRun, "dry", false, "Dry run: do not really make changes")
 	flags.BoolVar(&options.Quiet, "quiet", false, "Do not display changed files")
 	flags.BoolVar(&options.Verbose, "verbose", false, "Display changed values")
+	flags.BoolVar(&options.PrintPatch, "p", false, "Print patch")
 	flags.BoolVar(&options.DryRun, "d", false, "Dry run: do not really make changes")
 	flags.BoolVar(&options.Quiet, "q", false, "Do not display changed files")
 	flags.BoolVar(&options.Verbose, "v", false, "Display changed values")
@@ -42,6 +44,16 @@ func (options *Options) Parse(arguments []string) (err error) {
 
 	if options.Verbose && options.Quiet {
 		err = fmt.Errorf("You cannot use \"verbose\" and \"quiet\" flags together")
+		return
+	}
+
+	if options.PrintPatch && options.Quiet {
+		err = fmt.Errorf("You cannot use \"generate\" and \"quiet\" flags together")
+		return
+	}
+
+	if options.Verbose && options.PrintPatch {
+		err = fmt.Errorf("You cannot use \"verbose\" and \"generate\" flags together")
 		return
 	}
 

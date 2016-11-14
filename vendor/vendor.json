@@ -27,5 +27,5 @@
 			"revisionTime": "2016-06-24T11:06:44Z"
 		}
 	],
-	"rootPath": "github.com/RaveNoX/go-jsonmerge/cmd/jsonmerge"
+	"rootPath": "github.com/RaveNoX/go-jsonmerge"
 }

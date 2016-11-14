@@ -1,37 +1,44 @@
+variables:
+    GOPROJ_BASE: "github.com/RaveNoX" 
+    GOPROJ: "$GOPROJ_BASE/go-jsonmerge"
+    GOPATH: "$CI_PROJECT_DIR/.build"    
+
+
 stages:
 - test
 - build
 
 before_script:
-- mkdir -p $GOPATH/src/github.com/RaveNoX/
-- ln -s $(pwd) $GOPATH/src/github.com/RaveNoX/go-jsonmerge
-- cd $GOPATH/src/github.com/RaveNoX/go-jsonmerge
-- go get
-- (cd cmd/jsonmerge && go get)
+- export PATH="$GOPATH/bin:$PATH"
+- mkdir -p $GOPATH/src/$GOPROJ_BASE
+- ln -s $(pwd) $GOPATH/src/$GOPROJ
+- cd $GOPATH/src/$GOPROJ/
+- go get github.com/kardianos/govendor
+- govendor sync
+- mkdir -p artifacts
 
 after_script:
-- rm $GOPATH/src/github.com/RaveNoX/go-jsonmerge
+- rm -rf $GOPATH/src/$GOPROJ
 
-format:
-    tags:
-    - docker
-    - linux
-    image: golang:latest
-    stage: test
-    script:
-    - go get -u golang.org/x/tools/cmd/goimports
-    # If formatted is different than committed, exit with error    
-    - (if [ "$(goimports -l ./)" == "" ]; then echo "Good format"; else echo "Bad format"; exit 33; fi);
+cache:
+    key: "gopath_$CI_BUILD_REF"
+    paths:
+    - $GOPATH
+    - vendor/**
 
 test:
     tags:
     - docker
     - linux
     image: golang:latest
-    stage: test
-    script:
-    - pwd
-    - go test -cover -v ./...
+    stage: test        
+    script:        
+    - go test -cover -v -coverprofile="./artifacts/cover.out" ./ ./cmd
+    - go tool cover -html="./artifacts/cover.out" -o "./artifacts/cover.htm"
+    artifacts:
+        paths:
+        - artifacts/*
+    
 
 compile-linux:
     tags:
@@ -42,9 +49,8 @@ compile-linux:
     variables:
         GOOS: linux
         GOARCH: amd64
-    script:    
-    - mkdir -p artifacts
-    - go build -o artifacts/jsonmerge ./cmd/jsonmerge 
+    script:        
+    - go build -o artifacts/jsonmerge ./cmd 
     artifacts:
         paths:
         - artifacts/*
@@ -59,8 +65,7 @@ compile-windows:
         GOOS: windows
         GOARCH: amd64
     script:
-    - mkdir -p artifacts    
-    - go build -o artifacts/jsonmerge.exe ./cmd/jsonmerge
+    - go build -o artifacts/jsonmerge.exe ./cmd
     artifacts:
         paths:
         - artifacts/*

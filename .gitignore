@@ -1,1 +1,9 @@
 /artifacts/
+
+/vendor/**
+!/vendor/vendor.json
+
+/cmd/jsonmerge.exe
+/cmd/jsomerge
+/cmd/cmd.exe
+/cmd/cmd

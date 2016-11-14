@@ -22,7 +22,7 @@ func createGlobFiles(files []string) error {
 			return err
 		}
 
-		err = ioutil.WriteFile(item, data, os.ModeTemporary)
+		err = ioutil.WriteFile(item, data, os.ModePerm)
 		if err != nil {
 			return err
 		}

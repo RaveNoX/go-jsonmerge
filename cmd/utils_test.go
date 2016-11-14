@@ -1,14 +1,10 @@
 package main
 
-import "io/ioutil"
-import "os"
+import (
+	"io/ioutil"
+	"os"
+)
 
 func createTempDir() (string, error) {
-	err := os.MkdirAll("test", os.ModeDir)
-
-	if err != nil {
-		return "", err
-	}
-
-	return ioutil.TempDir("test", "jsonmerge_test")
+	return ioutil.TempDir(os.TempDir(), "jsonmerge_test")
 }

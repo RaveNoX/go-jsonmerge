@@ -1,4 +1,15 @@
 language: go
 
+install:
+- go get github.com/kardianos/govendor
+- govendor sync
+- mkdir -p artifacts  
+
 go:
-    - tip
+- tip
+
+script:
+- go test -cover -v -coverprofile="./artifacts/cover.out" ./ ./cmd
+- go tool cover -html="./artifacts/cover.out" -o "./artifacts/cover.htm"
+- go build -o artifacts/jsonmerge ./cmd
+- go build -o artifacts/jsonmerge.exe ./cmd 

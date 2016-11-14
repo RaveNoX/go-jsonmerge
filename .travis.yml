@@ -13,6 +13,5 @@ script:
 - go tool cover -html="./artifacts/cover.out" -o "./artifacts/cover.htm"
 - go test -cover -v -coverprofile="./artifacts/cover_cmd.out" ./cmd
 - go tool cover -html="./artifacts/cover_cmd.out" -o "./artifacts/cover_cmd.htm"
-- find /tmp
 - go build -o artifacts/jsonmerge ./cmd
 - go build -o artifacts/jsonmerge.exe ./cmd 

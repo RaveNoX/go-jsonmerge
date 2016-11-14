@@ -62,7 +62,7 @@ GO library for merging JSON objects
 
 ```bash
 $ go get -u github.com/RaveNoX/go-jsonmerge/cmd/jsonmerge
-$ jsonmerge <patch.json> <glob1.json> <glob2.json>...<globN.json>
+$ jsonmerge [options] <patch.json> <glob1.json> <glob2.json>...<globN.json>
 # For help
 $ jsonmerge -h
 ```

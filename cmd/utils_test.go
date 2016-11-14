@@ -1,10 +1,7 @@
 package main
 
-import (
-	"io/ioutil"
-	"os"
-)
+import "io/ioutil"
 
 func createTempDir() (string, error) {
-	return ioutil.TempDir(os.TempDir(), "jsonmerge_test")
+	return ioutil.TempDir("test", "jsonmerge_test")
 }

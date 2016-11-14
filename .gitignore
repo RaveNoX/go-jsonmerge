@@ -7,3 +7,6 @@
 /cmd/jsomerge
 /cmd/cmd.exe
 /cmd/cmd
+
+/test/
+/cmd/test/

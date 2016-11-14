@@ -9,7 +9,6 @@ go:
 - tip
 
 script:
-- ls -l
 - go test -cover -v -coverprofile="./artifacts/cover.out" ./
 - go tool cover -html="./artifacts/cover.out" -o "./artifacts/cover.htm"
 - go test -cover -v -coverprofile="./artifacts/cover_cmd.out" ./cmd

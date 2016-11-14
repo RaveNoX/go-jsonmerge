@@ -16,7 +16,7 @@ func createGlobFiles(files []string) error {
     `)
 
 	for _, item := range files {
-		err := os.MkdirAll(filepath.Dir(item), os.ModeDir)
+		err := os.MkdirAll(filepath.Dir(item), os.ModeDir|os.ModePerm)
 
 		if err != nil {
 			return err

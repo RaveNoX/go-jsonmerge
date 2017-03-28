@@ -16,4 +16,9 @@ set GOOS=windows
 call go build -o artifacts\jsonmerge.exe .\cmd
 if not %ERRORLEVEL% == 0 (exit %ERRORLEVEL%)
 
+echo Mac(darwin)
+set GOOS=darwin
+call go build -o artifacts\jsonmerge_darwin .\cmd
+if not %ERRORLEVEL% == 0 (exit %ERRORLEVEL%)
+
 echo Build done

@@ -72,3 +72,18 @@ compile-windows:
         paths:
         - artifacts/*
 
+compile-mac:
+    tags:
+    - docker
+    - linux
+    image: golang:latest
+    stage: build
+    variables:
+        GOOS: darwin
+        GOARCH: amd64
+    script:        
+    - go build -o artifacts/jsonmerge ./cmd 
+    artifacts:
+        paths:
+        - artifacts/*
+

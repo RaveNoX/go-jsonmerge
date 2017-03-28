@@ -67,5 +67,13 @@ $ jsonmerge [options] <patch.json> <glob1.json> <glob2.json>...<globN.json>
 $ jsonmerge -h
 ```
 
+## Development
+
+```
+go get -u github.com/kardianos/govendor
+govendor sync
+```
+
+
 ## License
 [MIT](./LICENSE.MD)

@@ -2,15 +2,18 @@
 
 set -e
 
-MY_DIR=$(dirname $(readlink -f "$0"))
+MY_DIR=$(dirname "$0")
 
 cd "${MY_DIR}"
 mkdir -p "artifacts"
 
 echo "Linux"
-GOARCH=adm64 GOOS=linux go build -o "artifacts/jsonmerge" ./cmd
+GOARCH=amd64 GOOS=linux go build -o "artifacts/jsonmerge" ./cmd
 
 echo "Windows"
-GOARCH=adm64 GOOS=windows go build -o "artifacts/jsonmerge.exe" ./cmd
+GOARCH=amd64 GOOS=windows go build -o "artifacts/jsonmerge.exe" ./cmd
+
+echo "Mac(darwin)"
+GOARCH=amd64 GOOS=darwin go build -o "artifacts/jsonmerge_darwin" ./cmd
 
 echo "Build done"

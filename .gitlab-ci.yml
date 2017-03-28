@@ -72,7 +72,7 @@ compile-windows:
         paths:
         - artifacts/*
 
-compile-mac:
+compile-darwin:
     tags:
     - docker
     - linux

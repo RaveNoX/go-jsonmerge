@@ -1,12 +1,11 @@
-/artifacts/
+# GoLand
+/.idea/
 
-/vendor/**
-!/vendor/vendor.json
+/vendor/
 
-/cmd/jsonmerge.exe
-/cmd/jsomerge
 /cmd/cmd.exe
 /cmd/cmd
 
+/artifacts/
 /test/
 /cmd/test/

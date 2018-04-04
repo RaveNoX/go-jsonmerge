@@ -36,5 +36,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Dry run: no files will be really patched")
 		fmt.Fprintln(os.Stderr)
 	}
-	patchFiles(patchBuff, dataFiles)
+
+	if errors := patchFiles(patchBuff, dataFiles); len(errors) > 0 {
+		fmt.Fprintln(os.Stderr, "Errors:")
+		for _, err := range errors {
+			fmt.Fprintf(os.Stderr, "    %v\n", err)
+		}
+
+		os.Exit(4)
+	}
 }

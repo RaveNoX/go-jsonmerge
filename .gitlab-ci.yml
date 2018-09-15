@@ -1,7 +1,5 @@
-variables:
-    GOPROJ_BASE: "github.com/RaveNoX" 
-    GOPROJ: "$GOPROJ_BASE/go-jsonmerge"
-    GOPATH: "$CI_PROJECT_DIR/.build"    
+variables:    
+    GOPROJ: "github.com/RaveNoX/go-jsonmerge"    
 
 
 stages:
@@ -9,21 +7,16 @@ stages:
 - build
 
 before_script:
-- export PATH="$GOPATH/bin:$PATH"
 - mkdir -p $GOPATH/src/$GOPROJ_BASE
+- rmdir $GOPATH/src/$GOPROJ_BASE
 - ln -s $(pwd) $GOPATH/src/$GOPROJ
 - cd $GOPATH/src/$GOPROJ/
 - go get -u github.com/golang/dep/cmd/dep
-- dep ensure
-- mkdir -p artifacts
-
-after_script:
-- rm -rf $GOPATH/src/$GOPROJ
+- dep ensure -v
 
 cache:
-    key: "gopath_$CI_BUILD_REF"
+    key: "${CI_COMMIT_REF_SLUG}"
     paths:
-    - $GOPATH
     - vendor/**
 
 test:
@@ -32,7 +25,7 @@ test:
     - linux
     image: golang:latest
     stage: test        
-    script:        
+    script:
     - go test -cover -v -coverprofile="./artifacts/cover.out" ./
     - go tool cover -html="./artifacts/cover.out" -o "./artifacts/cover.htm"
     - go test -cover -v -coverprofile="./artifacts/cover_cmd.out" ./cmd
@@ -40,49 +33,21 @@ test:
     artifacts:
         paths:
         - artifacts/*
-    
 
-compile-linux:
+build:
+    stage: build
     tags:
     - docker
     - linux
     image: golang:latest
-    stage: build
-    variables:
-        GOOS: linux
-        GOARCH: amd64
-    script:        
-    - go build -o artifacts/jsonmerge ./cmd 
-    artifacts:
-        paths:
-        - artifacts/*
-
-compile-windows:
-    tags:
-    - docker
-    - linux
-    image: golang:latest
-    stage: build
-    variables:
-        GOOS: windows
-        GOARCH: amd64
     script:
-    - go build -o artifacts/jsonmerge.exe ./cmd
-    artifacts:
-        paths:
-        - artifacts/*
-
-compile-darwin:
-    tags:
-    - docker
-    - linux
-    image: golang:latest
-    stage: build
-    variables:
-        GOOS: darwin
-        GOARCH: amd64
-    script:        
-    - go build -o artifacts/jsonmerge ./cmd 
+    - mkdir -p artifacts        
+    - echo "Building for Linux"
+    - GOOS=linux GOARCH=amd64 go build -o artifacts/jsonmerge ./cmd
+    - echo "Building for MacOS (darwin)"
+    - GOOS=darwin GOARCH=amd64 go build -o artifacts/jsonmerge_darwin ./cmd
+    - echo "Building for Windows"
+    - GOOS=windows GOARCH=amd64 go build -o artifacts/jsonmerge.exe ./cmd
     artifacts:
         paths:
         - artifacts/*

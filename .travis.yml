@@ -2,7 +2,7 @@ language: go
 
 install:
 - go get -u github.com/golang/dep/cmd/dep
-- dep ensure
+- dep ensure -v
 - mkdir -p artifacts
 
 go:

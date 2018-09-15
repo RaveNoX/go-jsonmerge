@@ -26,6 +26,7 @@ test:
     image: golang:latest
     stage: test        
     script:
+    - mkdir -p artifacts
     - go test -cover -v -coverprofile="./artifacts/cover.out" ./
     - go tool cover -html="./artifacts/cover.out" -o "./artifacts/cover.htm"
     - go test -cover -v -coverprofile="./artifacts/cover_cmd.out" ./cmd

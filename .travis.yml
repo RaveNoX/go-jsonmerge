@@ -7,7 +7,7 @@ install:
 - mkdir -p artifacts
 
 env:
-- GO111MODULE=on
+  - GO111MODULE=on
 
 script:
 - go test -cover -v -coverprofile="./artifacts/cover.out" ./

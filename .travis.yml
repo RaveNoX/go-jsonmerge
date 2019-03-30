@@ -1,10 +1,13 @@
 language: go
 
+go:
+- tip
+
 install:
 - mkdir -p artifacts
 
-go:
-- tip
+env:
+- GO111MODULE=on
 
 script:
 - go test -cover -v -coverprofile="./artifacts/cover.out" ./

@@ -6,19 +6,6 @@ stages:
 - test
 - build
 
-before_script:
-- mkdir -p $GOPATH/src/$GOPROJ
-- rmdir $GOPATH/src/$GOPROJ
-- ln -s $(pwd) $GOPATH/src/$GOPROJ
-- cd $GOPATH/src/$GOPROJ/
-- go get -u github.com/golang/dep/cmd/dep
-- dep ensure -v
-
-cache:
-    key: "${CI_COMMIT_REF_SLUG}"
-    paths:
-    - vendor/**
-
 test:
     tags:
     - docker

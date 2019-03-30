@@ -1,4 +1,4 @@
-# go-jsoncommentstrip
+# go-jsonmerge
 [![Build Status](https://travis-ci.org/RaveNoX/go-jsonmerge.svg?branch=master)](https://travis-ci.org/RaveNoX/go-jsonmerge)
 [![GoDoc](https://godoc.org/github.com/RaveNoX/go-jsonmerge?status.svg)](https://godoc.org/github.com/RaveNoX/go-jsonmerge)
 

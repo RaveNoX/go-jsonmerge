@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/RaveNoX/go-jsonmerge/cmd/options"
+	"github.com/RaveNoX/go-jsonmerge/cmd/jsonmerge/options"
 )
 
 var opts *options.Options
